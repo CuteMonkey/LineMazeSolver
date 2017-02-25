@@ -1,6 +1,7 @@
 from LMlib import *
 
 def build_map(map_name):
+    map_name += '.txt'
     try:
         map_f = open(map_name)
     except OSError:
@@ -17,16 +18,16 @@ def build_map(map_name):
         for col_i in range(lm_map.n_col):
             n_wall = int(a_row[col_i])
             if n_wall % 2 == 1:
-                lm_map.set_wall(row_i, col_i, 'R')
-            n_wall //= 2
-            if n_wall % 2 == 1:
-                lm_map.set_wall(row_i, col_i, 'L')
+                lm_map.set_wall(row_i, col_i, 'U')
             n_wall //= 2
             if n_wall % 2 == 1:
                 lm_map.set_wall(row_i, col_i, 'D')
             n_wall //= 2
             if n_wall % 2 == 1:
-                lm_map.set_wall(row_i, col_i, 'U')
+                lm_map.set_wall(row_i, col_i, 'L')
+            n_wall //= 2
+            if n_wall % 2 == 1:
+                lm_map.set_wall(row_i, col_i, 'R')
                 
     map_f.close()
     return lm_map

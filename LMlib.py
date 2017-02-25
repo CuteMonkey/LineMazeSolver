@@ -44,7 +44,7 @@ class LMmap:
             a_row = []
             for j in range(n_col):
                 a_row.append(LMgrid())
-            self._map(a_row)
+            self._map.append(a_row)
             
     def set_wall(self, row_i, col_i, dir):
         self._map[row_i][col_i].set_wall(dir)
@@ -59,17 +59,17 @@ class LMmap:
     def show_map(self):
         for row_i in range(self.n_row):
             for col_i in range(self.n_col):
-                b_wall = '0000'
-                if has_wall(row_i, col_i, 'U'):
-                    b_wall[0] = '1'
-                if has_wall(row_i, col_i, 'D'):
-                    b_wall[1] = '1'
-                if has_wall(row_i, col_i, 'L'):
-                    b_wall[2] = '1'
-                if has_wall(row_i, col_i, 'R'):
-                    b_wall[3] = '1'
-                if col_i == self.n_col - 1:
-                    print(b_wall, end='')
-                else:
-                    print(b_wall, end=' ')
+                wall_status = ['X', 'X', 'X', 'X']
+                if self.has_wall(row_i, col_i, 'U'):
+                    wall_status[0] = 'U'
+                if self.has_wall(row_i, col_i, 'D'):
+                    wall_status[1] = 'D'
+                if self.has_wall(row_i, col_i, 'L'):
+                    wall_status[2] = 'L'
+                if self.has_wall(row_i, col_i, 'R'):
+                    wall_status[3] = 'R'
+                for d in wall_status:
+                    print(d, end='')
+                if col_i != self.n_col - 1:
+                    print(' ', end='')
             print()
