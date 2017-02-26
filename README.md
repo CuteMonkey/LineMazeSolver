@@ -21,6 +21,7 @@ The wall status is a number, its a sum of walls at 4 directions.
 *   Right: 8
 
 The following is the map file of level 1 of Easy Episode 1:
+
     2 2
     06 09
     05 10
