@@ -4,6 +4,7 @@ class LMgrid:
         self._Dwall = False
         self._Lwall = False
         self._Rwall = False
+        self.passed = False
         
     def set_wall(self, dir):
         if dir == 'U':
@@ -67,6 +68,20 @@ class LMmap:
                 self.gates.append((row_i, 0))
             if not self.has_wall(row_i, self.n_col - 1, 'R'):
                 self.gates.append((row_i, self.n_col - 1))
+                
+    def set_passed(self, row_i, col_i):
+        self._map[row_i][col_i].passed = True
+        
+    def clean_passed(self, row_i, col_i):
+        self._map[row_i][col_i].passed = False
+        
+    def clean_all_passed(self):
+        for i in range(self.n_row):
+            for j in range(self.n_col):
+                self._map[i][j].passed = False
+        
+    def has_passed(self, row_i, col_i):
+        return self._map[row_i][col_i].passed
         
     #debug function
     def show_map(self):
