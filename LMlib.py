@@ -45,6 +45,7 @@ class LMmap:
             for j in range(n_col):
                 a_row.append(LMgrid())
             self._map.append(a_row)
+        self.gates = []
             
     def set_wall(self, row_i, col_i, dir):
         self._map[row_i][col_i].set_wall(dir)
@@ -54,6 +55,18 @@ class LMmap:
         
     def has_wall(self, row_i, col_i, dir):
         return self._map[row_i][col_i].has_wall(dir)
+        
+    def update_gates(self):
+        for col_i in range(self.n_col):
+            if not self.has_wall(0, col_i, 'U'):
+                self.gates.append((0, col_i))
+            if not self.has_wall(self.n_row - 1, col_i, 'D'):
+                self.gates.append((self.n_row - 1, col_i))
+        for row_i in range(self.n_row):
+            if not self.has_wall(row_i, 0, 'L'):
+                self.gates.append((row_i, 0))
+            if not self.has_wall(row_i, self.n_col - 1, 'R'):
+                self.gates.append((row_i, self.n_col - 1))
         
     #debug function
     def show_map(self):
@@ -73,3 +86,8 @@ class LMmap:
                 if col_i != self.n_col - 1:
                     print(' ', end='')
             print()
+            
+    #debug function
+    def show_gates(self):
+        for gate in self.gates:
+            print(gate)

@@ -1,9 +1,9 @@
 from LMlib import *
 
 def build_map(map_name):
-    map_name += '.txt'
+    map_f_path =  'LMquestion/' + map_name + '.txt'
     try:
-        map_f = open(map_name)
+        map_f = open(map_f_path)
     except OSError:
         print('Can not open map file ' + map_name + '.')
         return
