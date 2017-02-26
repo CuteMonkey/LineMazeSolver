@@ -12,7 +12,11 @@ while True:
     print('(2) Leave solver')
     action_number = input('Action number: ')
     
-    N = int(action_number)
+    try:
+        N = int(action_number)
+    except ValueError:
+        print('Not a number!')
+        continue
     if N == 1:
         print('Please enter the file name of line maze map.')
         file_name = input('Map file name: ')
