@@ -9,7 +9,7 @@ while True:
         print()
     print('Please enter the action number which you want to perfome.')
     print('(1) Use solver')
-    print('(2) Leave solver')
+    print('(2) Exit from solver')
     action_number = input('Action number: ')
     
     try:
@@ -24,6 +24,9 @@ while True:
         if line_maze_map == None:
             continue
         answer_path = dfs_solver(line_maze_map)
+        if len(answer_path) == 0:
+            print('This puzzle has no answer.')
+            continue
         write_answer(file_name, answer_path)
         print('This puzzle solved!')
     elif N == 2:

@@ -39,39 +39,50 @@ def dfs_solver(lm_map):
     
     for a_gate_pair in gate_pairs:
         dfs_grid_stack = []
+        #record rhe number of new branch when extending a grid
+        dfs_n_branch = []
         cur_path = []
     
         dfs_grid_stack.append(a_gate_pair[0])
         lm_map.clean_all_passed()
         while len(dfs_grid_stack) > 0:
             a_grid = dfs_grid_stack.pop()
+                
             lm_map.set_passed(a_grid[0], a_grid[1])
             cur_path.append(a_grid)
             
             if a_grid == a_gate_pair[1] and len(cur_path) == lm_map.n_row * lm_map.n_col:
                 return cur_path
             
-            has_possible_step = False
+            n_new_branch = 0 
             if a_grid[0] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'U') and not lm_map.has_passed(a_grid[0] - 1, a_grid[1]):
                 dfs_grid_stack.append((a_grid[0] - 1, a_grid[1]))
-                if not has_possible_step:
-                    has_possible_step = True
+                n_new_branch += 1
             if a_grid[0] != lm_map.n_row - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'D') and not lm_map.has_passed(a_grid[0] + 1, a_grid[1]):
                 dfs_grid_stack.append((a_grid[0] + 1, a_grid[1]))
-                if not has_possible_step:
-                    has_possible_step = True
+                n_new_branch += 1
             if a_grid[1] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'L') and not lm_map.has_passed(a_grid[0], a_grid[1] - 1):
                 dfs_grid_stack.append((a_grid[0], a_grid[1] - 1))
-                if not has_possible_step:
-                    has_possible_step = True
+                n_new_branch += 1
             if a_grid[1] != lm_map.n_col - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'R') and not lm_map.has_passed(a_grid[0], a_grid[1] + 1):
                 dfs_grid_stack.append((a_grid[0], a_grid[1] + 1))
-                if not has_possible_step:
-                    has_possible_step = True
+                n_new_branch += 1
             
-            if not has_possible_step:
-                a_grid = cur_path.pop()
-                lm_map.clean_passed(a_grid[0], a_grid[1])
+            if n_new_branch == 0:
+                while True:
+                    a_grid = cur_path.pop()
+                    lm_map.clean_passed(a_grid[0], a_grid[1])
+                    if len(dfs_n_branch) == 0:
+                        break
+                    elif dfs_n_branch[-1] > 1:
+                        dfs_n_branch[-1] -= 1
+                        break
+                    else:
+                        dfs_n_branch.pop()
+            else:
+                dfs_n_branch.append(n_new_branch)
+    else:
+        return []
                 
 def write_answer(map_name, right_path):
     ans_f_path = 'LManswer/' + map_name + '.txt'
