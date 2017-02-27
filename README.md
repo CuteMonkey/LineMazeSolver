@@ -32,16 +32,21 @@ The wall status is a number that it is a sum of walls at 4 directions.
 For example, there is a grid of which walls at up and left.
 Then the wall status of this gird is 1+4=5.  
 
-The following is the map file of level 1 of Easy Episode 1:
+The following is the map file of level 1 of Easy Episode 2:
 
-    2 2
-    06 09
-    05 10
+    4 3
+    09 05 08
+    06 00 08
+    05 00 08
+    04 00 10
 
 Those leading zeroes are only for reading easily, not necessary.
 
-NOTICE that this solver do not have map fomat check currently, so **write your map file carelly**.
+NOTICE that this solver do not have map fomat check currently, so **write your map file carefully**.
+
+If you are lazy, do not want to write map file by hand, here is a convenient tool.
+[Map file generator](https://fiddle.jshell.net/hqkpp78L/12/) 
 
 ## Format of answer file
-A answer path presented by a number matrix.
-The start point is 1.
+An answer path presented by a number matrix.
+The start point is 1 and the following steps are 2, 3, and so on.

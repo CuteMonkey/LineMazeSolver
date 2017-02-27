@@ -35,9 +35,21 @@ def build_map(map_name):
     return lm_map
     
 def dfs_solver(lm_map):
+    n_grid = lm_map.n_row * lm_map.n_col
     gate_pairs = ITs.combinations(lm_map.gates, 2)
     
-    for a_gate_pair in gate_pairs:
+    possible_gate_pairs = []
+    #remove impossible gate pairs
+    for gate_pair in gate_pairs:
+        manhatton_dist = abs(gate_pair[0][0] - gate_pair[1][0]) + abs(gate_pair[0][1] - gate_pair[1][1])
+        if n_grid % 2 == 0:
+            if manhatton_dist % 2 == 1:
+                possible_gate_pairs.append(gate_pair)
+        else:
+            if manhatton_dist % 2 == 0:
+                possible_gate_pairs.append(gate_pair)
+    
+    for a_gate_pair in possible_gate_pairs:
         dfs_grid_stack = []
         #record rhe number of new branch when extending a grid
         dfs_n_branch = []
@@ -51,7 +63,7 @@ def dfs_solver(lm_map):
             lm_map.set_passed(a_grid[0], a_grid[1])
             cur_path.append(a_grid)
             
-            if a_grid == a_gate_pair[1] and len(cur_path) == lm_map.n_row * lm_map.n_col:
+            if a_grid == a_gate_pair[1] and len(cur_path) == n_grid:
                 return cur_path
             
             n_new_branch = 0 
