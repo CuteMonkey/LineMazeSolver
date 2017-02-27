@@ -84,9 +84,27 @@ def dfs_solver(lm_map):
     else:
         return []
                 
-def write_answer(map_name, right_path):
+def write_answer(map_name, n_row, n_col, ans_path):
     ans_f_path = 'LManswer/' + map_name + '.txt'
     ans_f = open(ans_f_path, 'w')
-    for grid in right_path:
-        print(grid, file=ans_f)
+    
+    ans_map = []
+    for i in range(n_row):
+        a_row = []
+        for j in range(n_col):
+            a_row.append(0)
+        ans_map.append(a_row)
+        
+    index = 0
+    for cord in ans_path:
+        index += 1
+        ans_map[cord[0]][cord[1]] = index
+        
+    number_width = len(str(index))
+    format_str = '%0' + str(number_width) + 'd '
+    for i in range(n_row):
+        for j in range(n_col):
+            print(format_str % ans_map[i][j], file=ans_f, end='')
+        print(file=ans_f)
+        
     ans_f.close()
