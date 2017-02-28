@@ -7,7 +7,7 @@ Its algorithm is based on DFS.
 ## Prerequisites
 Because this solver is written by Python, so you need install Python in your OS.
 
-[Python Offical website](https://www.python.org/)
+[Python offical website](https://www.python.org/)
 
 ## How to use
 Execute *LMsolverUI* python module, and perform according to UI.
@@ -45,6 +45,7 @@ Those leading zeroes are only for reading easily, not necessary.
 NOTICE that this solver do not have map fomat check currently, so **write your map file carefully**.
 
 If you are lazy, do not want to write map file by hand, here is a convenient tool.
+
 [Map file generator](https://fiddle.jshell.net/hqkpp78L/12/) 
 
 ## Format of answer file

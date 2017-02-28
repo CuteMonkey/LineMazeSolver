@@ -35,21 +35,39 @@ def build_map(map_name):
     
 def dfs_solver(lm_map):
     lm_map.update_gates()
-    #lm_map.update_path_parts()
+    lm_map.update_path_parts()
     
     n_grid = lm_map.n_row * lm_map.n_col
     gate_pairs = ITs.combinations(lm_map.gates, 2)
     
     possible_gate_pairs = []
-    #remove impossible gate pairs
-    for gate_pair in gate_pairs:
-        manhatton_dist = abs(gate_pair[0][0] - gate_pair[1][0]) + abs(gate_pair[0][1] - gate_pair[1][1])
-        if n_grid % 2 == 0:
-            if manhatton_dist % 2 == 1:
-                possible_gate_pairs.append(gate_pair)
-        else:
-            if manhatton_dist % 2 == 0:
-                possible_gate_pairs.append(gate_pair)
+    must_gates = []
+    #choose gates that must be in answer path
+    for gate in lm_map.gates:
+        if lm_map.count_wall(gate[0], gate[1]) == 2:
+            must_gates.append(gate)
+    if len(must_gates) > 2:
+        return []
+    elif len(must_gates) == 2:
+        possible_gate_pairs.append((must_gates[0], must_gates[1]))
+    else:
+        #remove impossible gate pairs
+        for gate_pair in gate_pairs:
+            manhatton_dist = abs(gate_pair[0][0] - gate_pair[1][0]) + abs(gate_pair[0][1] - gate_pair[1][1])
+            if n_grid % 2 == 0:
+                if manhatton_dist % 2 == 1:
+                    if len(must_gates) == 1:
+                        if gate_pair[0] == must_gates[0] or gate_pair[1] == must_gates[0]:
+                            possible_gate_pairs.append(gate_pair)
+                    else:
+                        possible_gate_pairs.append(gate_pair)
+            else:
+                if manhatton_dist % 2 == 0:
+                    if len(must_gates) == 1:
+                        if gate_pair[0] == must_gates[0] or gate_pair[1] == must_gates[0]:
+                            possible_gate_pairs.append(gate_pair)
+                    else:
+                        possible_gate_pairs.append(gate_pair)
     
     for a_gate_pair in possible_gate_pairs:
         dfs_grid_stack = []
@@ -62,23 +80,41 @@ def dfs_solver(lm_map):
         while len(dfs_grid_stack) > 0:
             a_grid = dfs_grid_stack.pop()
                 
-            lm_map.set_passed(a_grid[0], a_grid[1])
-            cur_path.append(a_grid)
+            part_test_result = lm_map.is_part_end(a_grid[0], a_grid[1])
+            if part_test_result[0]:
+                a_part = lm_map.get_part(a_grid)
+                if part_test_result[1] == 'f':
+                    for grid in a_part:
+                        lm_map.set_passed(grid[0], grid[1])
+                        cur_path.append(grid)
+                    a_grid = a_part[-1]
+                elif part_test_result[1] == 'r':
+                    for grid in a_part[::-1]:
+                        lm_map.set_passed(grid[0], grid[1])
+                        cur_path.append(grid)
+                    a_grid = a_part[0]
+            else:
+                lm_map.set_passed(a_grid[0], a_grid[1])
+                cur_path.append(a_grid)
             
             if a_grid == a_gate_pair[1] and len(cur_path) == n_grid:
                 return cur_path
             
-            n_new_branch = 0 
-            if a_grid[0] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'U') and not lm_map.has_passed(a_grid[0] - 1, a_grid[1]):
+            n_new_branch = 0
+            #up case
+            if a_grid[0] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'U') and not lm_map.has_passed(a_grid[0] - 1, a_grid[1]) and not lm_map.is_part_mid(a_grid[0] - 1, a_grid[1]):
                 dfs_grid_stack.append((a_grid[0] - 1, a_grid[1]))
                 n_new_branch += 1
-            if a_grid[0] != lm_map.n_row - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'D') and not lm_map.has_passed(a_grid[0] + 1, a_grid[1]):
+            #down case
+            if a_grid[0] != lm_map.n_row - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'D') and not lm_map.has_passed(a_grid[0] + 1, a_grid[1]) and not lm_map.is_part_mid(a_grid[0] + 1, a_grid[1]):
                 dfs_grid_stack.append((a_grid[0] + 1, a_grid[1]))
                 n_new_branch += 1
-            if a_grid[1] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'L') and not lm_map.has_passed(a_grid[0], a_grid[1] - 1):
+            #left case
+            if a_grid[1] != 0 and not lm_map.has_wall(a_grid[0], a_grid[1], 'L') and not lm_map.has_passed(a_grid[0], a_grid[1] - 1) and not lm_map.is_part_mid(a_grid[0], a_grid[1] - 1):
                 dfs_grid_stack.append((a_grid[0], a_grid[1] - 1))
                 n_new_branch += 1
-            if a_grid[1] != lm_map.n_col - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'R') and not lm_map.has_passed(a_grid[0], a_grid[1] + 1):
+            #right case
+            if a_grid[1] != lm_map.n_col - 1 and not lm_map.has_wall(a_grid[0], a_grid[1], 'R') and not lm_map.has_passed(a_grid[0], a_grid[1] + 1) and not lm_map.is_part_mid(a_grid[0], a_grid[1] + 1):
                 dfs_grid_stack.append((a_grid[0], a_grid[1] + 1))
                 n_new_branch += 1
             
@@ -86,6 +122,12 @@ def dfs_solver(lm_map):
                 while True:
                     a_grid = cur_path.pop()
                     lm_map.clean_passed(a_grid[0], a_grid[1])
+                    part_test_result = lm_map.is_part_end(a_grid[0], a_grid[1])
+                    if part_test_result[0]:
+                        part = lm_map.get_part(a_grid)
+                        for i in range(len(part) - 1):
+                            grid = cur_path.pop()
+                            lm_map.clean_passed(grid[0], grid[1])
                     if len(dfs_n_branch) == 0:
                         break
                     elif dfs_n_branch[-1] > 1:

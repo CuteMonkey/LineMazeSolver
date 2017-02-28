@@ -5,7 +5,12 @@ class LMgrid:
         self._Lwall = False
         self._Rwall = False
         self._n_wall = 0
+        
         self.passed = False
+        
+        self.part_mid = False
+        self.part_fend = False
+        self.part_rend = False
         
     def set_wall(self, dir):
         if dir == 'U':
@@ -85,9 +90,11 @@ class LMmap:
                 
     def update_path_parts(self):
         self.path_parts.clear()
+        #find out all basic patterns
         for i in range(self.n_row):
             for j in range(self.n_col):
                 if self.count_wall(i, j) == 2:
+                    #I-shaped patterns
                     if self.has_wall(i, j, 'U') and self.has_wall(i, j, 'D'):
                         if j == 0:
                             self.path_parts.append([(i, j), (i, j + 1)])
@@ -102,6 +109,7 @@ class LMmap:
                             self.path_parts.append([(i - 1, j), (i, j)])
                         else:
                             self.path_parts.append([(i - 1, j), (i, j), (i + 1, j)])
+                    #L-shaped patterns
                     elif self.has_wall(i, j, 'U') and self.has_wall(i, j, 'L'):
                         if j == self.n_col - 1:
                             self.path_parts.append([(i, j), (i + 1, j)])
@@ -154,6 +162,36 @@ class LMmap:
                 break
             else:
                 self.path_parts = new_path_parts + old_path_parts
+                
+        #update in_part flag and part_flag of all grids
+        for i in range(self.n_row):
+            for j in range(self.n_col):
+                self._map[i][j].part_mid = False
+                self._map[i][j].part_fend = False
+                self._map[i][j].part_rend = False
+        for a_part in self.path_parts:
+            for i in range(1, len(a_part) - 1):
+                self._map[a_part[i][0]][a_part[i][1]].part_mid = True
+            self._map[a_part[0][0]][a_part[0][1]].part_fend = True
+            self._map[a_part[-1][0]][a_part[-1][1]].part_rend = True
+                
+    def is_part_mid(self, row_i, col_i):
+        return self._map[row_i][col_i].part_mid
+        
+    def is_part_end(self, row_i, col_i):
+        if self._map[row_i][col_i].part_fend:
+            return (True, 'f')
+        elif self._map[row_i][col_i].part_rend:
+            return (True, 'r')
+        else:
+            return (False, None)
+            
+    #get the path part from a grid included in it
+    def get_part(self, a_grid):
+        for part in self.path_parts:
+            if a_grid in part:
+                return part
+        return None
                 
     def _is_part_same(self, part_a, part_b):
         for grid_a in part_a:
