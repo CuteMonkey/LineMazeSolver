@@ -44,14 +44,16 @@ class LMgrid:
             
 class LMmap:
     def __init__(self, n_row, n_col):
-        self._map = []
         self.n_row = n_row
         self.n_col = n_col
-        for i in range(n_row):
+        
+        self._map = []
+        for i in range(self.n_row):
             a_row = []
-            for j in range(n_col):
+            for j in range(self.n_col):
                 a_row.append(LMgrid())
             self._map.append(a_row)
+        
         self.gates = []
         #record the parts of answer path that can be identified directly
         self.path_parts = []
@@ -69,7 +71,7 @@ class LMmap:
         return self._map[row_i][col_i].count_wall()
         
     def update_gates(self):
-        self.gates = []
+        self.gates.clear()
         for col_i in range(self.n_col):
             if not self.has_wall(0, col_i, 'U'):
                 self.gates.append((0, col_i))
@@ -82,6 +84,7 @@ class LMmap:
                 self.gates.append((row_i, self.n_col - 1))
                 
     def update_path_parts(self):
+        self.path_parts.clear()
         for i in range(self.n_row):
             for j in range(self.n_col):
                 if self.count_wall(i, j) == 2:
@@ -127,14 +130,90 @@ class LMmap:
                             self.path_parts.append([(i - 1, j), (i, j)])
                         else:
                             self.path_parts.append([(i, j - 1), (i, j), (i - 1, j)])
-                            
-        new_path_parts = []
+        
         while True:
-            pass
+            n_part = len(self.path_parts)
+            if n_part == 1:
+                break
+            
+            new_path_parts = []
+            old_path_parts = list(self.path_parts)
+            part_choosed = [False] * n_part
+            for i in range(n_part):
+                if not part_choosed[i]:
+                    for j in range(i + 1, n_part):
+                        if not part_choosed[j]:
+                            if self._is_part_same(self.path_parts[i], self.path_parts[j]):
+                                new_path_parts.append(self._combine_parts(self.path_parts[i], self.path_parts[j]))
+                                part_choosed[i] = True
+                                part_choosed[j] = True
+                                old_path_parts.remove(self.path_parts[i])
+                                old_path_parts.remove(self.path_parts[j])
+                                break
+            if len(new_path_parts) == 0:
+                break
+            else:
+                self.path_parts = new_path_parts + old_path_parts
                 
-    def _combine_parts(part_a, part_b):
-        pass
+    def _is_part_same(self, part_a, part_b):
+        for grid_a in part_a:
+            for grid_b in part_b:
+                if grid_a == grid_b:
+                    return True
+        return False
                 
+    def _combine_parts(self, part_a, part_b):
+        a_start, a_end, b_start, b_end = -1, -1, -1, -1
+        len_a, len_b = len(part_a), len(part_b)
+        same_flag = False
+        for i in range(len_a):
+            if same_flag:
+                if part_a[i] in part_b:
+                    a_end = i
+                else:
+                    break
+            else:
+                if part_a[i] in part_b:
+                    a_start, a_end = i, i
+                    same_flag = True
+                    
+        same_flag = False
+        for i in range(len_b):
+            if same_flag:
+                if part_b[i] in part_a:
+                    b_end = i
+                else:
+                    break
+            else:
+                if part_b[i] in part_a:
+                    b_start, b_end = i, i
+                    same_flag = True
+        
+        #for debuging
+        #print(a_start, a_end, b_start, b_end)
+        
+        #case that part_a contains part_b
+        if b_end - b_start == len_b - 1:
+            return part_a
+        #case that part_b contains part_a
+        elif a_end - a_start == len_a - 1:
+            return part_b
+        #partial overlapped case
+        else:
+            if part_a[a_start] == part_b[b_start] and part_a[a_end] == part_b[b_end]:
+                if a_end == len_a - 1 and b_start == 0:
+                    return part_a + part_b[b_end + 1:]
+                elif a_start == 0 and b_end == len_b - 1:
+                    return part_b + part_a[a_end + 1:]
+            if part_a[a_start] == part_b[b_end] and part_a[a_end] == part_b[b_start]:
+                if a_end == len_a - 1 and b_end == len_b - 1:
+                    return part_a + part_b[:b_start][::-1]
+                elif a_start == 0 and b_start == 0:
+                    return  part_a[::-1] + part_b[b_end + 1:]
+        #if it goes here, there is some errors about inputs
+        print('Combine error!')
+        return None
+            
     def set_passed(self, row_i, col_i):
         self._map[row_i][col_i].passed = True
         

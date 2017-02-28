@@ -31,10 +31,12 @@ def build_map(map_name):
                 lm_map.set_wall(row_i, col_i, 'R')
                 
     map_f.close()
-    lm_map.update_gates()
     return lm_map
     
 def dfs_solver(lm_map):
+    lm_map.update_gates()
+    #lm_map.update_path_parts()
+    
     n_grid = lm_map.n_row * lm_map.n_col
     gate_pairs = ITs.combinations(lm_map.gates, 2)
     
