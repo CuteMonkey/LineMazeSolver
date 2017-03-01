@@ -2,7 +2,7 @@
 
 ## Introduction
 The solver is for a app game named "[Linemaze Puzzles](https://play.google.com/store/apps/details?id=com.gameindy.line&hl=zh_TW)".
-Its algorithm is based on DFS.
+Its algorithm is based on DFS with a little optimization.
 
 ## Prerequisites
 Because this solver is written by Python, so you need install Python in your OS.
@@ -20,8 +20,8 @@ Then you only need to enter "easy1_1".
 The answer files will be generated in *LManswer* directory, and its file name is same as map file's.
 
 ## Format of map file
-The first line contains 2 numbers - the numbers of rows and columns.
-The following lines contain the wall status of each grid.
+The first line contains 2 numbers - the number of rows *n_row* and the number of *n_col*.
+The following are n_row lines and each line contains n_col wall status.
 
 The wall status is a number that it is a sum of walls at 4 directions.
 *   Up: 1
@@ -45,6 +45,7 @@ Those leading zeroes are only for reading easily, not necessary.
 NOTICE that this solver do not have map fomat check currently, so **write your map file carefully**.
 
 If you are lazy, do not want to write map file by hand, here is a convenient tool.
+(Suggest that use Chrome to open the tool.)
 
 [Map file generator](https://fiddle.jshell.net/hqkpp78L/12/) 
 

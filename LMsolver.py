@@ -38,12 +38,20 @@ def dfs_solver(lm_map):
     lm_map.update_path_parts()
     
     n_grid = lm_map.n_row * lm_map.n_col
-    gate_pairs = ITs.combinations(lm_map.gates, 2)
+    
+    #remove impossible gates
+    possible_gates = list(lm_map.gates)
+    for gate in lm_map.gates:
+        if lm_map.is_part_mid(gate[0], gate[1]):
+            possible_gates.remove(gate)
+    if len(possible_gates) == 1:
+        return []
+    gate_pairs = ITs.combinations(possible_gates, 2)
     
     possible_gate_pairs = []
     must_gates = []
     #choose gates that must be in answer path
-    for gate in lm_map.gates:
+    for gate in possible_gates:
         if lm_map.count_wall(gate[0], gate[1]) == 2:
             must_gates.append(gate)
     if len(must_gates) > 2:
